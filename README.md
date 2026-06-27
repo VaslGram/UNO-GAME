@@ -30,11 +30,8 @@ Designed with a clean interface, smooth animations, and responsive gameplay for 
 - 🎴 Classic UNO Rules
 - 👥 Multiplayer Ready Architecture
 - 🤖 Smart Computer Opponents
-- 🎨 Beautiful Card Animations
 - 🌙 Modern Dark Theme
 - 📱 Responsive Design
-- ⚡ Fast Gameplay
-- 🔊 Sound Effects Support
 - 💻 Cross Platform
 
 ---
@@ -99,31 +96,6 @@ Enjoy playing!
 - Use **Action Cards**
 - Don't forget to say **UNO!**
 - Be the first player with zero cards.
-
----
-
-# 🌟 Roadmap
-
-- [ ] Online Multiplayer
-- [ ] Player Profiles
-- [ ] Achievements
-- [ ] Leaderboards
-- [ ] More Themes
-- [ ] Mobile Optimization
-
----
-
-# ❤️ Contributing
-
-Pull requests are welcome.
-
-If you have ideas to improve the project, feel free to fork the repository and submit your contribution.
-
----
-
-# 📄 License
-
-MIT License
 
 ---
 
