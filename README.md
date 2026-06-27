@@ -70,7 +70,7 @@ git clone https://github.com/VaslGram/vaslgram.git
 Open the project
 
 ```bash
-index.html
+index.html  https://vaslgram.github.io/UNO-GAME/
 ```
 
 Enjoy playing!
