@@ -1,104 +1,136 @@
 <div align="center">
 
-# 🤖 𝕍𝕒𝕤𝕝𝔾𝕣𝕒𝕞 ✔️
+# 🎮 UNO Game
 
-### Modern Telegram Bots • Cloudflare Workers • Network Automation
+### Modern HTML5 UNO Card Game
 
-<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&size=24&pause=1000&center=true&vCenter=true&width=800&lines=Telegram+Bot+Developer;Cloudflare+Workers;Network+Automation;JavaScript+Developer;Welcome+to+VaslGram"/>
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&size=26&pause=1000&center=true&vCenter=true&width=900&lines=Play+UNO+Anywhere!;Modern+HTML5+Game;Beautiful+UI+%26+Animations;Responsive+Design"/>
+
+<p>
+<img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white"/>
+<img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white"/>
+<img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black"/>
+<img src="https://img.shields.io/badge/Game-UNO-red?style=for-the-badge"/>
+</p>
 
 </div>
 
 ---
 
-# 🚀 About
+# 🎲 About
 
-VaslGram is an open-source project focused on building modern Telegram bots, Cloudflare Workers, automation tools and network solutions.
+A modern browser-based implementation of the classic **UNO Card Game**, built with **HTML**, **CSS**, and **JavaScript**.
 
----
-
-## ⚡ Features
-
-- 🤖 Telegram Bot Development
-- ☁️ Cloudflare Workers
-- 🌐 Network Automation
-- ⚡ Fast APIs
-- 🔒 Secure Architecture
-- 💻 JavaScript Projects
+Designed with a clean interface, smooth animations, and responsive gameplay for desktop and mobile browsers.
 
 ---
 
-## 🛠 Tech Stack
+# ✨ Features
+
+- 🎴 Classic UNO Rules
+- 👥 Multiplayer Ready Architecture
+- 🤖 Smart Computer Opponents
+- 🎨 Beautiful Card Animations
+- 🌙 Modern Dark Theme
+- 📱 Responsive Design
+- ⚡ Fast Gameplay
+- 🔊 Sound Effects Support
+- 💻 Cross Platform
+
+---
+
+# 🛠 Technologies
+
+| Technology | Description |
+|------------|-------------|
+| HTML5 | Game Structure |
+| CSS3 | Modern UI & Animations |
+| JavaScript | Game Logic |
+
+---
+
+# 📸 Preview
 
 <p align="center">
 
-<img src="https://skillicons.dev/icons?i=js,nodejs,html,css,cloudflare,git,github,linux,vscode"/>
+<img src="https://raw.githubusercontent.com/github/explore/main/topics/html/html.png" width="120">
 
 </p>
 
 ---
 
-## 📂 Projects
+# 🚀 Getting Started
 
-- Telegram Bots
-- Cloudflare Workers
-- Webhook APIs
-- Network Tools
-- JavaScript Applications
+Clone the repository
 
----
+```bash
+git clone https://github.com/VaslGram/vaslgram.git
+```
 
-## 📱 Contact
+Open the project
 
-<p align="center">
+```bash
+index.html
+```
 
-<a href="https://t.me/VaslGramBot">
-<img src="https://img.shields.io/badge/🤖_Telegram_Bot-2CA5E0?style=for-the-badge"/>
-</a>
-
-<a href="https://t.me/VaslGramSub">
-<img src="https://img.shields.io/badge/📢_Telegram_Channel-229ED9?style=for-the-badge"/>
-</a>
-
-</p>
+Enjoy playing!
 
 ---
 
-## 📊 GitHub Stats
+# 📂 Project Structure
 
-<p align="center">
-
-<img height="170" src="https://github-readme-stats.vercel.app/api?username=VaslGram&show_icons=true&theme=tokyonight&hide_border=true"/>
-
-<img height="170" src="https://github-readme-stats.vercel.app/api/top-langs/?username=VaslGram&layout=compact&theme=tokyonight&hide_border=true"/>
-
-</p>
-
----
-
-## 🔥 GitHub Streak
-
-<p align="center">
-
-<img src="https://streak-stats.demolab.com?user=VaslGram&theme=tokyonight&hide_border=true"/>
-
-</p>
+```
+📁 UNO
+ ├── index.html
+ ├── style.css
+ ├── script.js
+ ├── assets/
+ │    ├── cards/
+ │    ├── sounds/
+ │    └── images/
+ └── README.md
+```
 
 ---
 
-## 📈 Activity Graph
+# 🎮 Gameplay
 
-<p align="center">
+- Match cards by **color** or **number**
+- Use **Action Cards**
+- Don't forget to say **UNO!**
+- Be the first player with zero cards.
 
-<img src="https://github-readme-activity-graph.vercel.app/graph?username=VaslGram&theme=tokyo-night"/>
+---
 
-</p>
+# 🌟 Roadmap
+
+- [ ] Online Multiplayer
+- [ ] Player Profiles
+- [ ] Achievements
+- [ ] Leaderboards
+- [ ] More Themes
+- [ ] Mobile Optimization
+
+---
+
+# ❤️ Contributing
+
+Pull requests are welcome.
+
+If you have ideas to improve the project, feel free to fork the repository and submit your contribution.
+
+---
+
+# 📄 License
+
+MIT License
 
 ---
 
 <div align="center">
 
-## ⭐ Thanks for visiting my profile ⭐
+## ⭐ If you like this project, don't forget to give it a Star!
 
-**Made with ❤️ by VaslGram**
+Made with ❤️ by **VaslGram**
 
 </div>
