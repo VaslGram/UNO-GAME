@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNO</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+    --felt: #0b2e1a;
+    --felt-light: #11432a;
+    --gold: #d4a017;
+    --gold-dim: #a07812;
+    --red: #E53935;
+    --blue: #1E88E5;
+    --green: #43A047;
+    --yellow: #FDD835;
+    --card-w: 78px;
+    --card-h: 116px;
+    --card-r: 10px;
+    --card-w-sm: 52px;
+    --card-h-sm: 76px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+    font-family:'Nunito',sans-serif;
+    background:radial-gradient(ellipse at 50% 40%,var(--felt-light),var(--felt) 60%,#061a0f 100%);
+    height:100vh;width:100vw;overflow:hidden;
+    color:#e0e0e0;user-select:none;
+}
+/* Felt texture overlay */
+body::before{
+    content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity:0.5;
+}
+#game{position:relative;z-index:1;height:100vh;display:flex;flex-direction:column;}
+
+/* ===== START SCREEN ===== */
+#start-screen{
+    position:fixed;inset:0;z-index:100;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:radial-gradient(ellipse at 50% 30%,#1a5c3a,#0b2e1a 70%,#061a0f);
+}
+#start-screen .logo{
+    font-family:'Bangers',cursive;font-size:clamp(80px,18vw,160px);
+    color:var(--red);letter-spacing:6px;
+    text-shadow:4px 4px 0 #b71c1c,8px 8px 0 rgba(0,0,0,0.4),0 0 60px rgba(229,57,53,0.3);
+    transform:rotate(-3deg);margin-bottom:10px;
+}
+#start-screen .logo span:nth-child(1){color:var(--red);}
+#start-screen .logo span:nth-child(2){color:var(--yellow);text-shadow:4px 4px 0 #c6a700,8px 8px 0 rgba(0,0,0,0.4),0 0 60px rgba(253,216,53,0.3);}
+#start-screen .logo span:nth-child(3){color:var(--green);text-shadow:4px 4px 0 #2e7d32,8px 8px 0 rgba(0,0,0,0.4),0 0 60px rgba(67,160,71,0.3);}
+#start-screen .sub{font-size:18px;color:rgba(255,255,255,0.5);margin-bottom:40px;letter-spacing:3px;}
+.btn{
+    font-family:'Bangers',cursive;font-size:26px;letter-spacing:2px;
+    padding:14px 48px;border:none;border-radius:50px;cursor:pointer;
+    background:linear-gradient(135deg,var(--gold),#e8b830);color:#1a1a1a;
+    box-shadow:0 4px 20px rgba(212,160,23,0.4),inset 0 1px 0 rgba(255,255,255,0.3);
+    transition:all .2s;position:relative;overflow:hidden;
+}
+.btn:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 6px 30px rgba(212,160,23,0.6);}
+.btn:active{transform:scale(0.97);}
+.floating-cards{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.fc{
+    position:absolute;width:60px;height:88px;border-radius:8px;
+    background:var(--red);border:3px solid #fff;
+    transform:rotate(var(--r));opacity:0.12;
+    animation:floatCard var(--d) ease-in-out infinite alternate;
+}
+@keyframes floatCard{0%{translate:0 0;}100%{translate:var(--tx) var(--ty);}}
+
+/* ===== GAME LAYOUT ===== */
+#top-area{
+    height:130px;display:flex;align-items:center;justify-content:center;
+    gap:20px;padding:10px;flex-shrink:0;
+}
+.ai-info{
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    padding:8px 16px;border-radius:12px;background:rgba(0,0,0,0.25);
+    border:1px solid rgba(255,255,255,0.06);min-width:130px;transition:all .3s;
+}
+.ai-info.active{border-color:var(--gold);box-shadow:0 0 20px rgba(212,160,23,0.25);background:rgba(212,160,23,0.08);}
+.ai-info .name{font-weight:700;font-size:14px;}
+.ai-info .count{font-size:22px;font-weight:900;color:var(--gold);}
+.ai-info .label{font-size:10px;text-transform:uppercase;letter-spacing:1px;opacity:0.5;}
+.ai-cards{display:flex;gap:-4px;margin-top:2px;}
+.mini-card{
+    width:22px;height:32px;border-radius:3px;
+    background:linear-gradient(135deg,#c62828,#b71c1c);
+    border:1.5px solid #ef5350;margin-left:-6px;
+    box-shadow:0 1px 3px rgba(0,0,0,0.3);
+}
+.mini-card:first-child{margin-left:0;}
+
+#center-area{
+    flex:1;display:flex;align-items:center;justify-content:center;
+    gap:30px;position:relative;
+}
+.pile{
+    position:relative;cursor:pointer;transition:transform .15s;
+}
+.pile:hover{transform:scale(1.05);}
+.pile-label{
+    position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);
+    font-size:11px;text-transform:uppercase;letter-spacing:1px;opacity:0.4;white-space:nowrap;
+}
+.draw-pile-stack{position:relative;width:var(--card-w);height:var(--card-h);}
+.draw-pile-stack .card-back{position:absolute;}
+.draw-pile-stack .card-back:nth-child(1){top:0;left:0;}
+.draw-pile-stack .card-back:nth-child(2){top:-2px;left:1px;}
+.draw-pile-stack .card-back:nth-child(3){top:-4px;left:2px;}
+
+.discard-area{width:var(--card-w);height:var(--card-h);position:relative;}
+#color-indicator{
+    position:absolute;inset:-8px;border-radius:16px;
+    border:3px solid var(--gold);opacity:0;transition:all .3s;pointer-events:none;
+}
+#color-indicator.show{opacity:1;animation:pulseGlow 1.5s ease-in-out infinite;}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 10px currentColor;}50%{box-shadow:0 0 25px currentColor;}}
+
+.turn-banner{
+    position:absolute;top:-40px;left:50%;transform:translateX(-50%);
+    font-family:'Bangers',cursive;font-size:20px;letter-spacing:2px;
+    color:var(--gold);opacity:0;transition:all .3s;white-space:nowrap;
+}
+.turn-banner.show{opacity:1;top:-35px;}
+
+#direction-indicator{
+    position:absolute;font-size:28px;color:rgba(255,255,255,0.15);
+    animation:spinDir 4s linear infinite;
+}
+@keyframes spinDir{from{rotate:0deg;}to{rotate:360deg;}}
+
+/* ===== CARDS ===== */
+.card{
+    width:var(--card-w);height:var(--card-h);border-radius:var(--card-r);
+    position:relative;cursor:default;flex-shrink:0;
+    box-shadow:0 2px 8px rgba(0,0,0,0.4);
+    transition:transform .15s,box-shadow .15s,margin .2s;
+    overflow:hidden;
+}
+.card.playable{cursor:pointer;}
+.card.playable:hover{
+    transform:translateY(-18px) scale(1.05);
+    box-shadow:0 8px 24px rgba(0,0,0,0.5),0 0 15px var(--glow);
+    z-index:50!important;
+}
+.card.playable:active{transform:translateY(-12px) scale(1.02);}
+.card-inner{
+    position:absolute;inset:3px;border-radius:calc(var(--card-r) - 2px);
+    background:#fff;display:flex;align-items:center;justify-content:center;
+    overflow:hidden;
+}
+.card-corner{
+    position:absolute;font-family:'Bangers',cursive;font-size:16px;line-height:1;
+    color:#fff;text-shadow:1px 1px 0 rgba(0,0,0,0.3);
+}
+.card-corner.tl{top:5px;left:6px;}
+.card-corner.br{bottom:5px;right:6px;transform:rotate(180deg);}
+.card-center{
+    font-family:'Bangers',cursive;font-size:40px;color:#fff;
+    text-shadow:2px 2px 0 rgba(0,0,0,0.2);
+    z-index:1;position:relative;
+}
+.card-center.sm{font-size:22px;}
+.card-oval{
+    position:absolute;width:56px;height:80px;border-radius:50%;
+    transform:rotate(-25deg);opacity:0.2;
+}
+.card-back{
+    width:var(--card-w);height:var(--card-h);border-radius:var(--card-r);
+    background:linear-gradient(135deg,#c62828,#b71c1c);
+    border:3px solid #ef5350;
+    box-shadow:0 2px 8px rgba(0,0,0,0.4);
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;
+}
+.card-back .back-text{
+    font-family:'Bangers',cursive;font-size:22px;color:var(--yellow);
+    transform:rotate(-25deg);letter-spacing:2px;
+    text-shadow:1px 1px 0 rgba(0,0,0,0.3);
+}
+.card-back .back-oval{
+    position:absolute;width:50px;height:72px;border-radius:50%;
+    background:rgba(0,0,0,0.15);transform:rotate(-25deg);
+}
+
+/* ===== PLAYER AREA ===== */
+#player-area{
+    height:180px;display:flex;flex-direction:column;align-items:center;
+    padding:8px 20px 16px;flex-shrink:0;
+}
+#player-label{
+    font-size:12px;text-transform:uppercase;letter-spacing:2px;
+    opacity:0.5;margin-bottom:6px;transition:all .3s;
+}
+#player-label.active{color:var(--gold);opacity:1;}
+#player-hand{
+    display:flex;align-items:flex-end;justify-content:center;
+    height:130px;max-width:100%;overflow-x:auto;
+    padding:0 10px 5px;scrollbar-width:none;
+}
+#player-hand::-webkit-scrollbar{display:none;}
+#player-hand .card{margin-left:-18px;transition:transform .15s,box-shadow .15s,margin .25s;}
+#player-hand .card:first-child{margin-left:0;}
+
+/* ===== COLOR PICKER ===== */
+#color-picker-overlay{
+    position:fixed;inset:0;z-index:200;
+    background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);
+    display:none;align-items:center;justify-content:center;
+}
+#color-picker-overlay.show{display:flex;}
+#color-picker{
+    background:rgba(20,20,20,0.95);border-radius:20px;padding:30px 40px;
+    text-align:center;border:1px solid rgba(255,255,255,0.1);
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+}
+#color-picker h2{font-family:'Bangers',cursive;font-size:28px;letter-spacing:2px;margin-bottom:20px;color:var(--gold);}
+.color-options{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.color-btn{
+    width:80px;height:80px;border-radius:16px;border:4px solid transparent;
+    cursor:pointer;transition:all .2s;position:relative;
+    box-shadow:0 4px 15px rgba(0,0,0,0.3);
+}
+.color-btn:hover{transform:scale(1.1);border-color:#fff;box-shadow:0 6px 25px rgba(0,0,0,0.4);}
+.color-btn:active{transform:scale(0.95);}
+.color-btn.red{background:var(--red);}
+.color-btn.blue{background:var(--blue);}
+.color-btn.green{background:var(--green);}
+.color-btn.yellow{background:var(--yellow);}
+
+/* ===== UNO BUTTON ===== */
+#uno-btn{
+    position:fixed;bottom:195px;right:24px;z-index:80;
+    font-family:'Bangers',cursive;font-size:24px;letter-spacing:2px;
+    padding:10px 24px;border:none;border-radius:50px;cursor:pointer;
+    background:linear-gradient(135deg,var(--red),#c62828);color:#fff;
+    box-shadow:0 4px 20px rgba(229,57,53,0.5);
+    display:none;animation:unoPulse 0.6s ease-in-out infinite alternate;
+}
+#uno-btn.show{display:block;}
+@keyframes unoPulse{0%{transform:scale(1);box-shadow:0 4px 20px rgba(229,57,53,0.5);}100%{transform:scale(1.1);box-shadow:0 6px 30px rgba(229,57,53,0.8);}}
+
+/* ===== TOAST ===== */
+#toast-container{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+    z-index:300;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.toast{
+    font-family:'Bangers',cursive;font-size:36px;letter-spacing:3px;
+    padding:10px 30px;border-radius:12px;
+    background:rgba(0,0,0,0.85);border:2px solid var(--gold);
+    color:var(--gold);white-space:nowrap;
+    animation:toastIn 0.3s ease-out,toastOut 0.4s 1.2s ease-in forwards;
+}
+@keyframes toastIn{from{opacity:0;transform:scale(0.5) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
+@keyframes toastOut{to{opacity:0;transform:scale(0.8) translateY(-20px);}}
+
+/* ===== GAME OVER ===== */
+#game-over{
+    position:fixed;inset:0;z-index:250;
+    background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);
+    display:none;align-items:center;justify-content:center;
+}
+#game-over.show{display:flex;}
+#game-over-content{text-align:center;}
+#game-over-content h1{font-family:'Bangers',cursive;font-size:56px;letter-spacing:4px;margin-bottom:10px;}
+#game-over-content .sub{font-size:18px;opacity:0.6;margin-bottom:30px;}
+
+/* ===== ANIMATIONS ===== */
+.card-enter{animation:cardEnter .3s ease-out;}
+@keyframes cardEnter{from{opacity:0;transform:scale(0.5) translateY(30px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.card-played{animation:cardPlayed .3s ease-out;}
+@keyframes cardPlayed{from{opacity:0;transform:scale(1.3) rotate(10deg);}to{opacity:1;transform:scale(1) rotate(0);}}
+.card-draw{animation:cardDraw .35s ease-out;}
+@keyframes cardDraw{from{opacity:0;transform:translateY(-60px) scale(0.7);}to{opacity:1;transform:translateY(0) scale(1);}}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:700px){
+    :root{--card-w:62px;--card-h:92px;--card-r:8px;}
+    .card-corner{font-size:13px;}
+    .card-corner.tl{top:3px;left:4px;}
+    .card-corner.br{bottom:3px;right:4px;}
+    .card-center{font-size:30px;}
+    .card-center.sm{font-size:17px;}
+    .card-oval{width:44px;height:64px;}
+    .card-back .back-text{font-size:17px;}
+    .card-back .back-oval{width:40px;height:58px;}
+    #player-hand .card{margin-left:-14px;}
+    #top-area{height:110px;gap:10px;padding:8px;}
+    .ai-info{min-width:100px;padding:6px 10px;}
+    .mini-card{width:18px;height:26px;margin-left:-5px;}
+    #player-area{height:155px;padding-bottom:10px;}
+    #uno-btn{bottom:165px;right:12px;font-size:18px;padding:8px 18px;}
+    .toast{font-size:26px;padding:8px 20px;}
+}
+@media(max-width:480px){
+    :root{--card-w:54px;--card-h:80px;}
+    .card-center{font-size:26px;}
+    .card-center.sm{font-size:15px;}
+    #player-hand .card{margin-left:-12px;}
+    .ai-info{min-width:80px;}
+}
+@media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important;}
+}
+</style>
+</head>
+<body>
+
+<!-- Start Screen -->
+<div id="start-screen">
+    <div class="floating-cards" id="floating-cards"></div>
+    <div class="logo"><span>U</span><span>N</span><span>O</span></div>
+    <div class="sub">CLASSIC CARD GAME</div>
+    <button class="btn" onclick="startGame()">Play Game</button>
+</div>
+
+<!-- Game -->
+<div id="game" style="display:none;">
+    <div id="top-area">
+        <div class="ai-info" id="ai0-info">
+            <div class="name">INSTAGRAM</div>
+            <div class="count" id="ai0-count">7</div>
+            <div class="label">cards</div>
+            <div class="ai-cards" id="ai0-cards"></div>
+        </div>
+        <div class="ai-info" id="ai1-info">
+            <div class="name">TELEGRAM</div>
+            <div class="count" id="ai1-count">7</div>
+            <div class="label">cards</div>
+            <div class="ai-cards" id="ai1-cards"></div>
+        </div>
+        <div class="ai-info" id="ai2-info">
+            <div class="name">WHATSAPP</div>
+            <div class="count" id="ai2-count">7</div>
+            <div class="label">cards</div>
+            <div class="ai-cards" id="ai2-cards"></div>
+        </div>
+    </div>
+
+    <div id="center-area">
+        <div class="turn-banner" id="turn-banner">Your Turn</div>
+        <div class="pile" id="draw-pile" onclick="handleDrawClick()">
+            <div class="draw-pile-stack">
+                <div class="card-back"><div class="back-oval"></div><div class="back-text">UNO</div></div>
+                <div class="card-back"><div class="back-oval"></div><div class="back-text">UNO</div></div>
+                <div class="card-back"><div class="back-oval"></div><div class="back-text">UNO</div></div>
+            </div>
+            <div class="pile-label" id="deck-count">Draw Pile</div>
+        </div>
+        <div class="pile">
+            <div class="discard-area" id="discard-area">
+                <div id="color-indicator"></div>
+            </div>
+            <div class="pile-label">Discard</div>
+        </div>
+        <div id="direction-indicator"><i class="fas fa-redo"></i></div>
+    </div>
+
+    <div id="player-area">
+        <div id="player-label">Your Hand</div>
+        <div id="player-hand"></div>
+    </div>
+</div>
+
+<!-- UNO Button -->
+<button id="uno-btn" onclick="callUno()">UNO!</button>
+
+<!-- Color Picker -->
+<div id="color-picker-overlay">
+    <div id="color-picker">
+        <h2>Choose a Color</h2>
+        <div class="color-options">
+            <button class="color-btn red" onclick="pickColor('red')" aria-label="Red"></button>
+            <button class="color-btn blue" onclick="pickColor('blue')" aria-label="Blue"></button>
+            <button class="color-btn green" onclick="pickColor('green')" aria-label="Green"></button>
+            <button class="color-btn yellow" onclick="pickColor('yellow')" aria-label="Yellow"></button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<!-- Game Over -->
+<div id="game-over">
+    <div id="game-over-content">
+        <h1 id="go-title">You Win!</h1>
+        <div class="sub" id="go-sub">Congratulations!</div>
+        <button class="btn" onclick="restartGame()">Play Again</button>
+    </div>
+</div>
+
+<script>
+/* ===== CONSTANTS ===== */
+const COLORS = ['red','blue','green','yellow'];
+const COLOR_HEX = {red:'#E53935',blue:'#1E88E5',green:'#43A047',yellow:'#FDD835'};
+const NUMBER_VALUES = ['0','1','2','3','4','5','6','7','8','9'];
+const ACTION_SYMBOLS = {skip:'⊘', reverse:'↻', draw2:'+2'};
+const WILD_SYMBOLS = {wild:'W', wild4:'+4'};
+const AI_DELAY = 900;
+const AI_NAMES = ['INSTAGRAM','TELEGRAM','WHATSAPP'];
+
+/* ===== GAME STATE ===== */
+let G = {};
+let pendingWild = null; // card index when waiting for color pick
+
+function initState(){
+    G = {
+        deck:[], discard:[], players:[[],[],[],[]],
+        current:0, direction:1, color:null, value:null,
+        gameOver:false, pendingDraw:0,
+        unoCalled:false, unoTimer:null, turnLocked:false
+    };
+    pendingWild = null;
+}
+
+/* ===== DECK ===== */
+function createDeck(){
+    let deck = [];
+    for(const c of COLORS){
+        // One 0 per color
+        deck.push({color:c,value:'0',id:uid()});
+        // Two of each 1-9, skip, reverse, draw2
+        for(let n=1;n<=9;n++){
+            deck.push({color:c,value:String(n),id:uid()});
+            deck.push({color:c,value:String(n),id:uid()});
+        }
+        for(const a of ['skip','reverse','draw2']){
+            deck.push({color:c,value:a,id:uid()});
+            deck.push({color:c,value:a,id:uid()});
+        }
+    }
+    // 4 Wilds, 4 Wild Draw 4
+    for(let i=0;i<4;i++){
+        deck.push({color:'wild',value:'wild',id:uid()});
+        deck.push({color:'wild',value:'wild4',id:uid()});
+    }
+    return deck;
+}
+let _uid = 0;
+function uid(){return 'c'+(++_uid);}
+
+function shuffle(arr){
+    for(let i=arr.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [arr[i],arr[j]]=[arr[j],arr[i]];
+    }
+    return arr;
+}
+
+function drawFromDeck(n=1){
+    let cards=[];
+    for(let i=0;i<n;i++){
+        if(G.deck.length===0) reshuffleDeck();
+        if(G.deck.length>0) cards.push(G.deck.pop());
+    }
+    return cards;
+}
+
+function reshuffleDeck(){
+    if(G.discard.length<=1) return;
+    const top=G.discard.pop();
+    G.deck=shuffle(G.discard);
+    G.discard=[top];
+}
+
+/* ===== CARD LOGIC ===== */
+function canPlay(card){
+    if(G.pendingDraw>0){
+        // Can only play draw2 on draw2, or draw4 on draw4
+        if(G.pendingDraw===2 && card.value==='draw2') return true;
+        if(G.pendingDraw===4 && card.value==='wild4') return true;
+        return false;
+    }
+    if(card.color==='wild') return true;
+    if(card.color===G.color) return true;
+    if(card.value===G.value) return true;
+    return false;
+}
+
+function getPlayableIndices(hand){
+    let indices=[];
+    hand.forEach((c,i)=>{if(canPlay(c))indices.push(i);});
+    return indices;
+}
+
+function getCardDisplay(card){
+    if(card.value==='wild') return {symbol:'W',small:true};
+    if(card.value==='wild4') return {symbol:'+4',small:true};
+    if(card.value==='skip') return {symbol:'⊘',small:false};
+    if(card.value==='reverse') return {symbol:'↻',small:false};
+    if(card.value==='draw2') return {symbol:'+2',small:false};
+    return {symbol:card.value,small:false};
+}
+
+/* ===== RENDERING ===== */
+function renderAll(){
+    renderAI();
+    renderDiscard();
+    renderPlayerHand();
+    renderTurnIndicator();
+    renderDeckCount();
+    renderDirection();
+    renderUnoBtn();
+}
+
+function createCardEl(card, playable=false, onclick=null){
+    const el=document.createElement('div');
+    el.className='card'+(playable?' playable':'');
+    if(playable) el.style.setProperty('--glow', COLOR_HEX[G.color]||'var(--gold)');
+    const bg = card.color==='wild' ? '#1a1a1a' : COLOR_HEX[card.color];
+    el.style.background=bg;
+    const d = getCardDisplay(card);
+    el.innerHTML=`
+        <div class="card-inner">
+            <div class="card-oval" style="background:${bg}"></div>
+            <div class="card-corner tl">${d.symbol}</div>
+            <div class="card-center${d.small?' sm':''}">${d.symbol}</div>
+            <div class="card-corner br">${d.symbol}</div>
+        </div>`;
+    if(onclick) el.addEventListener('click',onclick);
+    return el;
+}
+
+function renderAI(){
+    for(let i=0;i<3;i++){
+        const info=document.getElementById(`ai${i}-info`);
+        const count=document.getElementById(`ai${i}-count`);
+        const cardsEl=document.getElementById(`ai${i}-cards`);
+        const n=G.players[i+1].length;
+        count.textContent=n;
+        info.classList.toggle('active',G.current===i+1&&!G.gameOver);
+        // Mini cards (max 12 shown)
+        cardsEl.innerHTML='';
+        const show=Math.min(n,12);
+        for(let j=0;j<show;j++){
+            const mc=document.createElement('div');
+            mc.className='mini-card';
+            cardsEl.appendChild(mc);
+        }
+        if(n>12){
+            const more=document.createElement('span');
+            more.style.cssText='font-size:10px;opacity:0.5;margin-left:4px;';
+            more.textContent=`+${n-12}`;
+            cardsEl.appendChild(more);
+        }
+    }
+}
+
+function renderDiscard(){
+    const area=document.getElementById('discard-area');
+    // Keep color indicator
+    const ci=document.getElementById('color-indicator');
+    area.innerHTML='';
+    area.appendChild(ci);
+    if(G.discard.length>0){
+        const top=G.discard[G.discard.length-1];
+        const el=createCardEl(top);
+        el.classList.add('card-played');
+        area.appendChild(el);
+    }
+    // Color indicator
+    if(G.color && G.color!=='wild'){
+        ci.className='show';
+        ci.style.color=COLOR_HEX[G.color];
+        ci.style.borderColor=COLOR_HEX[G.color];
+    } else {
+        ci.className='';
+    }
+}
+
+function renderPlayerHand(){
+    const hand=document.getElementById('player-hand');
+    hand.innerHTML='';
+    const playerCards=G.players[0];
+    const isMyTurn=G.current===0 && !G.gameOver && !G.turnLocked;
+    const playable=isMyTurn ? getPlayableIndices(playerCards) : [];
+
+    playerCards.forEach((card,i)=>{
+        const isPlayable=playable.includes(i);
+        const el=createCardEl(card, isPlayable, isPlayable ? ()=>playCard(i) : null);
+        el.style.zIndex=i;
+        hand.appendChild(el);
+    });
+}
+
+function renderTurnIndicator(){
+    const banner=document.getElementById('turn-banner');
+    const label=document.getElementById('player-label');
+    if(G.gameOver){banner.classList.remove('show');label.classList.remove('active');return;}
+    if(G.current===0){
+        banner.textContent='Your Turn';
+        banner.classList.add('show');
+        label.classList.add('active');
+    } else {
+        banner.textContent=AI_NAMES[G.current-1]+"'s Turn";
+        banner.classList.add('show');
+        label.classList.remove('active');
+    }
+}
+
+function renderDeckCount(){
+    document.getElementById('deck-count').textContent=`Draw (${G.deck.length})`;
+}
+
+function renderDirection(){
+    const el=document.getElementById('direction-indicator');
+    el.style.transform=G.direction===1?'rotate(0deg)':'rotate(180deg)';
+}
+
+function renderUnoBtn(){
+    const btn=document.getElementById('uno-btn');
+    const shouldShow = G.players[0].length===2 && G.current===0 && !G.gameOver && !G.unoCalled;
+    btn.classList.toggle('show',shouldShow);
+}
+
+/* ===== TOAST ===== */
+function showToast(msg){
+    const container=document.getElementById('toast-container');
+    const t=document.createElement('div');
+    t.className='toast';
+    t.textContent=msg;
+    container.appendChild(t);
+    setTimeout(()=>t.remove(),1700);
+}
+
+/* ===== GAME FLOW ===== */
+function startGame(){
+    _uid=0;
+    initState();
+    G.deck=shuffle(createDeck());
+    // Deal 7 cards each
+    for(let i=0;i<4;i++){
+        G.players[i]=drawFromDeck(7);
+    }
+    // Flip first card (skip wild draw 4 as first)
+    let first;
+    do{
+        first=G.deck.pop();
+        if(first.value==='wild4'){
+            G.deck.unshift(first);
+            shuffle(G.deck);
+            first=null;
+        }
+    }while(!first);
+    G.discard.push(first);
+    G.color=first.color==='wild'?COLORS[Math.floor(Math.random()*4)]:first.color;
+    G.value=first.value;
+
+    // Handle first card effects
+    if(first.value==='skip') G.current=1; // skip player 0
+    else if(first.value==='reverse') G.direction=-1;
+    else if(first.value==='draw2'){G.pendingDraw=2;G.current=1;}
+    // If first is wild, color already set randomly, no effect
+
+    document.getElementById('start-screen').style.display='none';
+    document.getElementById('game').style.display='flex';
+    renderAll();
+
+    if(G.current!==0) setTimeout(()=>aiTurnLoop(),AI_DELAY);
+}
+
+function restartGame(){
+    document.getElementById('game-over').classList.remove('show');
+    document.getElementById('game').style.display='none';
+    document.getElementById('start-screen').style.display='flex';
+}
+
+function nextTurn(){
+    if(G.gameOver) return;
+    G.current = (G.current + G.direction + 4) % 4;
+    G.turnLocked=false;
+    renderAll();
+
+    if(G.current===0){
+        // Player's turn - wait for input
+        // If pending draw, they must draw (can still play draw2/4 to stack)
+        if(G.pendingDraw>0 && getPlayableIndices(G.players[0]).length===0){
+            // Must draw
+            setTimeout(()=>{
+                const drawn=drawFromDeck(G.pendingDraw);
+                G.players[0].push(...drawn);
+                G.pendingDraw=0;
+                showToast(`Drew ${drawn.length} cards`);
+                renderAll();
+                // Turn passes after forced draw
+                setTimeout(()=>nextTurn(),600);
+            },400);
+        }
+        // Otherwise wait for player input
+    } else {
+        setTimeout(()=>aiTurnLoop(),AI_DELAY);
+    }
+}
+
+/* ===== PLAYER ACTIONS ===== */
+function playCard(index){
+    if(G.current!==0 || G.gameOver || G.turnLocked) return;
+    const card=G.players[0][index];
+    if(!canPlay(card)) return;
+
+    // Wild cards - need color pick
+    if(card.color==='wild'){
+        pendingWild=index;
+        document.getElementById('color-picker-overlay').classList.add('show');
+        return;
+    }
+
+    executePlay(0, index, null);
+}
+
+function pickColor(color){
+    document.getElementById('color-picker-overlay').classList.remove('show');
+    if(pendingWild===null) return;
+    const index=pendingWild;
+    pendingWild=null;
+    executePlay(0, index, color);
+}
+
+function executePlay(playerIdx, cardIndex, chosenColor){
+    const card=G.players[playerIdx].splice(cardIndex,1)[0];
+    G.discard.push(card);
+    G.turnLocked=true;
+
+    // UNO check
+    if(G.players[playerIdx].length===1){
+        if(playerIdx===0){
+            if(!G.unoCalled){
+                // Penalty! (simplified: just force draw 2)
+                setTimeout(()=>{
+                    showToast('Forgot UNO! +2 penalty');
+                    const pen=drawFromDeck(2);
+                    G.players[0].push(...pen);
+                    G.unoCalled=false;
+                    renderAll();
+                },500);
+            } else {
+                showToast('UNO!');
+                G.unoCalled=false;
+            }
+        } else {
+            // AI always calls UNO (90% chance for fun)
+            if(Math.random()<0.9) showToast(AI_NAMES[playerIdx-1]+': UNO!');
+        }
+    }
+
+    // Win check
+    if(G.players[playerIdx].length===0){
+        G.gameOver=true;
+        renderAll();
+        setTimeout(()=>showGameOver(playerIdx),600);
+        return;
+    }
+
+    // Set color/value
+    const prevColor=G.color;
+    if(card.color==='wild'){
+        G.color=chosenColor;
+        G.value=card.value;
+    } else {
+        G.color=card.color;
+        G.value=card.value;
+    }
+
+    // Apply effects
+    applyEffect(card, playerIdx);
+}
+
+function applyEffect(card, playerIdx){
+    const nxt=()=>nextTurn();
+
+    if(card.value==='skip'){
+        // Skip next player
+        const skipped=(playerIdx+G.direction+4)%4;
+        const skipName=skipped===0?'You':AI_NAMES[skipped-1];
+        showToast(skipName+' Skipped!');
+        renderAll();
+        // Move current forward twice (skip one)
+        G.current=(G.current+G.direction+4)%4;
+        setTimeout(nxt,700);
+    } else if(card.value==='reverse'){
+        G.direction*=-1;
+        showToast('Reversed!');
+        renderAll();
+        if(G.players.filter(h=>h.length>0).length<=2){
+            // In 2-player, reverse acts like skip
+            G.current=(G.current+G.direction+4)%4;
+        }
+        setTimeout(nxt,700);
+    } else if(card.value==='draw2'){
+        G.pendingDraw+=2;
+        showToast('+2!');
+        renderAll();
+        setTimeout(nxt,700);
+    } else if(card.value==='wild4'){
+        G.pendingDraw+=4;
+        showToast('+4!');
+        renderAll();
+        setTimeout(nxt,700);
+    } else {
+        renderAll();
+        setTimeout(nxt,400);
+    }
+}
+
+function handleDrawClick(){
+    if(G.current!==0 || G.gameOver || G.turnLocked) return;
+
+    // If pending draw, must draw all
+    if(G.pendingDraw>0){
+        const drawn=drawFromDeck(G.pendingDraw);
+        G.players[0].push(...drawn);
+        showToast(`Drew ${drawn.length} cards`);
+        G.pendingDraw=0;
+        G.turnLocked=true;
+        renderAll();
+        setTimeout(()=>nextTurn(),600);
+        return;
+    }
+
+    // Normal draw - draw 1, can play it if valid
+    const drawn=drawFromDeck(1);
+    if(drawn.length===0) return;
+    G.players[0].push(...drawn);
+    const newCard=drawn[0];
+
+    if(canPlay(newCard)){
+        // Allow playing the drawn card (show it highlighted)
+        renderAll();
+        // Animate the new card
+        const hand=document.getElementById('player-hand');
+        const lastCard=hand.lastElementChild;
+        if(lastCard) lastCard.classList.add('card-draw');
+        // Player can click it or pass - we'll auto-advance after a delay if they don't
+        showToast('Drew a card - play it or wait');
+        G.turnLocked=true;
+        // Give them 3 seconds to play, then pass
+        setTimeout(()=>{
+            if(G.current===0 && !G.gameOver){
+                nextTurn();
+            }
+        },3000);
+    } else {
+        showToast('No match - turn passed');
+        G.turnLocked=true;
+        renderAll();
+        const hand=document.getElementById('player-hand');
+        const lastCard=hand.lastElementChild;
+        if(lastCard) lastCard.classList.add('card-draw');
+        setTimeout(()=>nextTurn(),700);
+    }
+}
+
+function callUno(){
+    if(G.players[0].length===2 && G.current===0){
+        G.unoCalled=true;
+        showToast('UNO!');
+        document.getElementById('uno-btn').classList.remove('show');
+    }
+}
+
+/* ===== AI LOGIC ===== */
+function aiTurnLoop(){
+    if(G.gameOver || G.current===0) return;
+    const p=G.current;
+    const hand=G.players[p];
+    const playable=getPlayableIndices(hand);
+
+    if(playable.length>0){
+        const idx=aiChooseCard(p, playable);
+        const card=hand[idx];
+
+        if(card.color==='wild'){
+            const color=aiChooseColor(p);
+            executePlay(p, idx, color);
+        } else {
+            executePlay(p, idx, null);
+        }
+    } else {
+        // Draw
+        if(G.pendingDraw>0){
+            const drawn=drawFromDeck(G.pendingDraw);
+            G.players[p].push(...drawn);
+            showToast(AI_NAMES[p-1]+` drew ${drawn.length}`);
+            G.pendingDraw=0;
+            G.turnLocked=true;
+            renderAll();
+            setTimeout(()=>nextTurn(),700);
+        } else {
+            const drawn=drawFromDeck(1);
+            G.players[p].push(...drawn);
+            if(drawn.length>0 && canPlay(drawn[0])){
+                // Play the drawn card
+                const newIdx=hand.length-1;
+                const nc=hand[newIdx];
+                renderAll();
+                setTimeout(()=>{
+                    if(nc.color==='wild'){
+                        const color=aiChooseColor(p);
+                        executePlay(p, newIdx, color);
+                    } else {
+                        executePlay(p, newIdx, null);
+                    }
+                },500);
+            } else {
+                showToast(AI_NAMES[p-1]+' drew a card');
+                G.turnLocked=true;
+                renderAll();
+                setTimeout(()=>nextTurn(),700);
+            }
+        }
+    }
+}
+
+function aiChooseCard(playerIdx, playableIndices){
+    const hand=G.players[playerIdx];
+    // Priority: action cards > numbers, save wilds for last
+    // But play draw2/wild4 aggressively when opponent is low
+    const scored=playableIndices.map(i=>{
+        const c=hand[i];
+        let score=0;
+        if(c.value==='wild4') score=1; // save for last
+        else if(c.value==='wild') score=2; // save for last
+        else if(c.value==='draw2') score=15;
+        else if(c.value==='skip') score=12;
+        else if(c.value==='reverse') score=10;
+        else score=5+parseInt(c.value||0);
+
+        // Boost action cards if next player is low on cards
+        const nextP=(playerIdx+G.direction+4)%4;
+        if(G.players[nextP].length<=2){
+            if(c.value==='draw2') score+=20;
+            if(c.value==='wild4') score+=25;
+            if(c.value==='skip') score+=15;
+        }
+
+        // Prefer playing color we have most of
+        if(c.color!=='wild'){
+            const colorCount=hand.filter(x=>x.color===c.color).length;
+            score+=colorCount*0.5;
+        }
+
+        return {index:i,score};
+    });
+
+    scored.sort((a,b)=>b.score-a.score);
+    return scored[0].index;
+}
+
+function aiChooseColor(playerIdx){
+    const hand=G.players[playerIdx];
+    const counts={red:0,blue:0,green:0,yellow:0};
+    hand.forEach(c=>{if(counts[c.color]!==undefined)counts[c.color]++;});
+    let best='red',max=0;
+    for(const [col,cnt] of Object.entries(counts)){
+        if(cnt>max){max=cnt;best=col;}
+    }
+    return best;
+}
+
+/* ===== GAME OVER ===== */
+function showGameOver(winnerIdx){
+    const go=document.getElementById('game-over');
+    const title=document.getElementById('go-title');
+    const sub=document.getElementById('go-sub');
+
+    if(winnerIdx===0){
+        title.textContent='You Win!';
+        title.style.color='var(--gold)';
+        sub.textContent='All cards played - victory!';
+    } else {
+        title.textContent=AI_NAMES[winnerIdx-1]+' Wins';
+        title.style.color=COLOR_HEX['red'];
+        sub.textContent='Better luck next time!';
+    }
+    go.classList.add('show');
+}
+
+/* ===== FLOATING CARDS ON START SCREEN ===== */
+(function(){
+    const container=document.getElementById('floating-cards');
+    const colors=['var(--red)','var(--blue)','var(--green)','var(--yellow)'];
+    for(let i=0;i<14;i++){
+        const el=document.createElement('div');
+        el.className='fc';
+        el.style.background=colors[i%4];
+        el.style.left=Math.random()*90+'%';
+        el.style.top=Math.random()*90+'%';
+        el.style.setProperty('--r',(Math.random()*60-30)+'deg');
+        el.style.setProperty('--d',(3+Math.random()*4)+'s');
+        el.style.setProperty('--tx',(Math.random()*40-20)+'px');
+        el.style.setProperty('--ty',(Math.random()*40-20)+'px');
+        el.style.animationDelay=(-Math.random()*4)+'s';
+        container.appendChild(el);
+    }
+})();
+</script>
+</body>
+</html>
