@@ -35,35 +35,6 @@ Designed with a clean interface, smooth animations, and responsive gameplay for 
 - 💻 Cross Platform
 
 ---
-
-# 🛠 Technologies
-
-| Technology | Description |
-|------------|-------------|
-| HTML5 | Game Structure |
-| CSS3 | Modern UI & Animations |
-| JavaScript | Game Logic |
-
----
-
-# 📸 Preview
-
-<p align="center">
-
-<img src="https://raw.githubusercontent.com/github/explore/main/topics/html/html.png" width="120">
-
-</p>
-
----
-
-# 🚀 Getting Started
-
-Clone the repository
-
-```bash
-git clone https://github.com/VaslGram/vaslgram.git
-```
-
 Open the project
 
 ```bash
